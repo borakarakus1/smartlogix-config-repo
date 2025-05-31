@@ -1,5 +1,33 @@
 spring:
   application:
     name: api-gateway
-  config:
-    import: optional:configserver:http://localhost:8888
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/user/**
+
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/api/product/**
+
+    config:
+      fail-fast: true
+
+  main:
+    allow-bean-definition-overriding: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
